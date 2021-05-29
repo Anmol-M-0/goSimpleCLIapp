@@ -9,28 +9,28 @@ var customer *Customer
 func TestError(t *testing.T) {
 	_, err := customer.New("", "", 12, 123.55)
 	var invalidName Error = Error("please provide valid name")
-	if err != invalidName {
-		t.Errorf("test fail, \nwant: '%v'\ngot : '%v' ", invalidName, err)
-	}
+	testError(invalidName, err, t)
+
 	_, err = customer.New("Ken", "", 12, 123.55)
 	var invalidEmail Error = Error("please provide valid email")
-	if err != invalidEmail {
-		t.Errorf("test fail, \nwant: '%v'\ngot : '%v' ", invalidEmail, err)
-	}
+	testError(invalidEmail, err, t)
+
 	_, err = customer.New("Ken", "ken@example.com", 12, 123.55)
 	var underAge Error = Error("you have to be over 16 years of age to use our services")
-	if err != underAge {
-		t.Errorf("test fail, \nwant: '%v'\ngot : '%v' ", underAge, err)
-	}
-	_, err = customer.New("Ken", "", 1200, 123.55)
-	var invalidAge Error = Error("please provide valid age, humans dont live that long")
-	if err != invalidEmail {
-		t.Errorf("test fail, \nwant: '%v'\ngot : '%v' ", invalidAge, err)
-	}
-	_, err = customer.New("Ken", "", 25, -123.55)
-	var invalidCreditLimit Error = Error("credit limit cannot be negative")
-	if err != invalidEmail {
-		t.Errorf("test fail, \nwant: '%v'\ngot : '%v' ", invalidCreditLimit, err)
-	}
+	testError(underAge, err, t)
 
+	_, err = customer.New("Ken", "ken@example.com", 1200, 123.55)
+	var invalidAge Error = Error("please provide valid age, humans dont live that long")
+	testError(invalidAge, err, t)
+
+	_, err = customer.New("Ken", "ken@example.com", 25, -123.55)
+	var invalidCreditLimit Error = Error("credit limit cannot be negative")
+	testError(invalidCreditLimit, err, t)
+
+}
+
+func testError(want, got error, t *testing.T) {
+	if want != got {
+		t.Errorf("test fail, \nwant: '%v'\ngot : '%v' ", want, got)
+	}
 }
