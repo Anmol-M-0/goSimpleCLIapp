@@ -1,5 +1,7 @@
 package customer
 
+import "fmt"
+
 type Error string
 
 func (e Error) Error() string {
@@ -43,4 +45,7 @@ func (c *Customer) New(name, email string, age int, creditLimit float64) (cs Cus
 		CreditLimit: creditLimit,
 	}
 	return cs, nil
+}
+func (c Customer) String() string {
+	return fmt.Sprintf("Name : %s\nEmail: %s\nAge: %d\nCredit Limit: %f", c.Name, c.Email, c.Age, c.CreditLimit)
 }
