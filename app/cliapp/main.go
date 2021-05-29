@@ -77,7 +77,6 @@ func scanInt() (i int) {
 func scanString() (str string) {
 	sc.Scan()
 	str = sc.Text()
-	str = strings.TrimLeft(str, " ")
-	str = strings.TrimRight(str, " ")
+	str = strings.TrimSpace(str)
 	return
 }
