@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/Anmol-M-0/goSimpleCLIapp/hello"
+	"github.com/Anmol-M-0/goSimpleCLIapp/app/cliapp/hello"
 )
 
 func main() {
