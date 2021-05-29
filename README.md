@@ -1,0 +1,1 @@
+# A simple CLI app for my practice 😋
