@@ -9,11 +9,18 @@ import (
 
 	"github.com/Anmol-M-0/goSimpleCLIapp/app/cliapp/customerCredit/hello"
 	cust "github.com/Anmol-M-0/goSimpleCLIapp/business/customer"
+	"github.com/pkg/profile"
 )
 
 var sc *bufio.Scanner = bufio.NewScanner(os.Stdin)
 
 func main() {
+	defer profile.Start(profile.MemProfile).Stop()
+	// defer profile.Start(profile.GoroutineProfile).Stop()
+	// defer profile.Start(profile.MemProfileAllocs).Stop()
+	// defer profile.Start(profile.MemProfileHeap).Stop()
+	// defer profile.Start(profile.TraceProfile).Stop()
+	// defer profile.Start().Stop()
 	RunCustomerCreditApp()
 }
 
@@ -36,7 +43,7 @@ func RunCustomerCreditApp() {
 			fmt.Println(err)
 			continue
 		}
-		if err = findByEmail(customerList, tmpCustomer.Email); err != nil {
+		if err = validateByEmail(customerList, tmpCustomer.Email); err != nil {
 			fmt.Println(err)
 			continue
 		}
@@ -45,6 +52,7 @@ func RunCustomerCreditApp() {
 	for _, v := range customerList {
 		fmt.Println(v)
 	}
+
 	var command string
 	var tmpString string
 loop:
@@ -59,7 +67,7 @@ loop:
 			if err != nil {
 				continue
 			}
-			if err = findByEmail(customerList, tmpCustomer.Email); err != nil {
+			if err = validateByEmail(customerList, tmpCustomer.Email); err != nil {
 				fmt.Println(err)
 				continue
 			}
@@ -68,10 +76,38 @@ loop:
 			for _, v := range customerList {
 				fmt.Println(v)
 			}
-		case "change credit limit", "3":
-			var index int
+		case "3", "find":
+			fmt.Println("enter 'email' to  find by email, 'name' to find by name")
 			tmpString = scanString()
-			tmpCustomer, index, err = findByName(customerList, tmpString)
+			switch tmpString {
+			case "email":
+				fmt.Println("enter email")
+				tmpString = scanString()
+
+				tmpCustomer, _, err = findByEmail(customerList, tmpString)
+				if err != nil {
+					fmt.Println(err)
+					continue
+				}
+				fmt.Println(tmpCustomer)
+			case "name":
+				fmt.Println("enter name")
+				tmpString = scanString()
+
+				tmpCustomer, _, err = findByName(customerList, tmpString)
+				if err != nil {
+					fmt.Println(err)
+					continue
+				}
+				fmt.Println(tmpCustomer)
+			default:
+				fmt.Println("invalid option")
+			}
+		case "change credit limit", "4":
+			var index int
+			fmt.Println("enter email")
+			tmpString = scanString()
+			tmpCustomer, index, err = findByEmail(customerList, tmpString)
 			if err != nil {
 				fmt.Println(err)
 				continue
@@ -139,11 +175,20 @@ func findByName(customerList []cust.Customer, name string) (c cust.Customer, ind
 	return cust.Customer{}, -1, errors.New("customer not found")
 }
 
-func findByEmail(customerList []cust.Customer, email string) error {
+func validateByEmail(customerList []cust.Customer, email string) error {
 	for _, v := range customerList {
 		if v.Email == email {
 			return errors.New("this email is already present")
 		}
 	}
 	return nil
+}
+
+func findByEmail(customerList []cust.Customer, email string) (c cust.Customer, index int, err error) {
+	for i, v := range customerList {
+		if v.Email == email {
+			return v, i, nil
+		}
+	}
+	return cust.Customer{}, -1, errors.New("customer not found")
 }
